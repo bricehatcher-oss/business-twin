@@ -1934,11 +1934,57 @@ function CandleSvg() {
 
 function StoryPath() {
   return (
-    <svg className="story-path" viewBox="0 0 520 80" aria-hidden="true">
-      <path d="M8 54 C120 8, 190 78, 282 34 S420 10, 508 48" />
-      <circle cx="8" cy="54" r="5" />
-      <circle cx="282" cy="34" r="5" />
-      <circle cx="508" cy="48" r="5" />
+    <svg className="story-path" viewBox="0 0 620 168" aria-hidden="true">
+      <defs>
+        <linearGradient id="storySafe" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stopColor="#2CA01C" />
+          <stop offset="58%" stopColor="#53B7FF" />
+          <stop offset="100%" stopColor="#2CA01C" />
+        </linearGradient>
+        <linearGradient id="storyRisk" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0%" stopColor="#F2B84B" />
+          <stop offset="100%" stopColor="#D52B1E" />
+        </linearGradient>
+        <filter id="storyGlow" x="-20%" y="-60%" width="140%" height="220%">
+          <feGaussianBlur stdDeviation="6" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+
+      <rect className="story-band story-band-good" x="28" y="20" width="258" height="92" rx="24" />
+      <rect className="story-band story-band-warn" x="342" y="20" width="236" height="92" rx="24" />
+
+      <path className="story-gridline" d="M42 116 H584" />
+      <path className="story-shadow" d="M34 98 C108 42, 184 112, 252 78 S360 20, 440 54 S528 134, 588 80" />
+      <path className="story-risk-line" d="M350 74 C410 128, 488 130, 580 78" />
+      <path className="story-safe-line" d="M34 98 C108 42, 184 112, 252 78 S360 20, 440 54 S528 134, 588 80" />
+
+      <g className="story-node node-one" transform="translate(34 98)">
+        <circle r="12" />
+        <text x="0" y="-24" textAnchor="middle">Ask</text>
+      </g>
+      <g className="story-node node-two" transform="translate(252 78)">
+        <circle r="12" />
+        <text x="0" y="-24" textAnchor="middle">Match</text>
+      </g>
+      <g className="story-node node-three" transform="translate(440 54)">
+        <circle r="12" />
+        <text x="0" y="-24" textAnchor="middle">Rehearse</text>
+      </g>
+      <g className="story-node node-four" transform="translate(588 80)">
+        <circle r="12" />
+        <text x="0" y="-24" textAnchor="middle">Act</text>
+      </g>
+
+      <g className="story-pulse">
+        <circle r="7" />
+      </g>
+      <text className="story-caption" x="44" y="148">ledger math</text>
+      <text className="story-caption" x="235" y="148">peer evidence</text>
+      <text className="story-caption" x="432" y="148">risk bands</text>
     </svg>
   );
 }
@@ -2565,27 +2611,99 @@ const styles = `
     background: ${DEEP};
   }
   .story-path {
-    width: min(520px, 100%);
-    height: 80px;
-    margin-top: 28px;
+    width: min(620px, 100%);
+    height: 168px;
+    margin-top: 30px;
+    overflow: visible;
   }
-  .story-path path {
+  .story-band {
+    opacity: 0;
+    animation: bandIn .7s ease forwards;
+    animation-delay: .25s;
+  }
+  .story-band-good {
+    fill: #2CA01C10;
+    stroke: #2CA01C22;
+  }
+  .story-band-warn {
+    fill: #F2B84B14;
+    stroke: #F2B84B2F;
+    animation-delay: .42s;
+  }
+  .story-gridline {
     fill: none;
-    stroke: ${QBO};
-    stroke-width: 4;
+    stroke: #DDE7E1;
+    stroke-width: 2;
+    stroke-dasharray: 6 8;
+  }
+  .story-safe-line,
+  .story-risk-line,
+  .story-shadow {
+    fill: none;
     stroke-linecap: round;
+    stroke-linejoin: round;
     stroke-dasharray: 620;
     stroke-dashoffset: 620;
     animation: drawPath 2s cubic-bezier(.2,.9,.2,1) forwards;
   }
-  .story-path circle {
+  .story-shadow {
+    stroke: #0B1F1A16;
+    stroke-width: 18;
+    filter: url(#storyGlow);
+  }
+  .story-safe-line {
+    stroke: url(#storySafe);
+    stroke-width: 7;
+    filter: url(#storyGlow);
+  }
+  .story-risk-line {
+    stroke: url(#storyRisk);
+    stroke-width: 4;
+    stroke-dasharray: 7 10;
+    animation-delay: .55s;
+    opacity: .9;
+  }
+  .story-node circle {
     fill: white;
     stroke: ${QBO};
-    stroke-width: 4;
+    stroke-width: 5;
     opacity: 0;
     animation: dotIn .4s ease forwards;
     animation-delay: 1.4s;
   }
+  .story-node text,
+  .story-caption {
+    fill: ${MUTED};
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: .02em;
+    opacity: 0;
+    animation: dotIn .4s ease forwards;
+    animation-delay: 1.55s;
+  }
+  .story-caption {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+  }
+  .node-two circle { animation-delay: 1.62s; }
+  .node-three circle { animation-delay: 1.84s; stroke: ${BLUE}; }
+  .node-four circle { animation-delay: 2.05s; }
+  .story-pulse {
+    offset-path: path("M34 98 C108 42, 184 112, 252 78 S360 20, 440 54 S528 134, 588 80");
+    animation: travelPath 4.2s cubic-bezier(.2,.9,.2,1) infinite;
+    filter: url(#storyGlow);
+  }
+  .story-pulse circle {
+    fill: ${QBO};
+    stroke: white;
+    stroke-width: 4;
+  }
+  .dark-mode .story-gridline { stroke: #355247; }
+  .dark-mode .story-node text,
+  .dark-mode .story-caption { fill: #D8EAE1; }
+  .dark-mode .story-band-good { fill: #53E07C14; stroke: #53E07C33; }
+  .dark-mode .story-band-warn { fill: #F2B84B18; stroke: #F2B84B44; }
   .surface-grid, .small-multiples, .results, .matching, .empty-state {
     max-width: 1180px;
     margin: 24px auto 0;
@@ -3918,8 +4036,18 @@ const styles = `
     0%, 100% { transform: translate(0, 0); }
     50% { transform: translate(4px, -3px); }
   }
+  @keyframes bandIn {
+    from { opacity: 0; transform: translateY(8px) scale(.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
   @keyframes drawPath { to { stroke-dashoffset: 0; } }
   @keyframes dotIn { to { opacity: 1; } }
+  @keyframes travelPath {
+    0% { offset-distance: 0%; opacity: 0; }
+    8% { opacity: 1; }
+    92% { opacity: 1; }
+    100% { offset-distance: 100%; opacity: 0; }
+  }
   @keyframes fadeBackdrop { from { opacity: 0; } to { opacity: 1; } }
   @keyframes sheetUp {
     from { transform: translateY(28px); opacity: .4; }
